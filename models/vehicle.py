@@ -1,7 +1,8 @@
 class Vehicle:
     owner = "Group 2 LTD"
     vehicles = {"KDL 001A": {"vehicle_id": "KDL 001A",
-                            "brand": "Toyota Prado", "current_mileage": 20000}}
+                             "brand": "Toyota Prado",
+                             "current_mileage": 20000}}
     _next_id = 100
 
     def __init__(self, vehicle_id, mileage, brand):

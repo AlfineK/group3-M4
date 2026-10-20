@@ -1,5 +1,6 @@
 from models.vehicle import Vehicle
 from models.customer import Customer
+# from models.driver import Driver
 
 while True:
     choice = input(
@@ -16,9 +17,11 @@ while True:
         v = Vehicle.create(current_mileage, brand)
         print(v.vehicles)
 
+
     if choice == "2":
         # print("cars ",Vehicle.vehicles)
         customer = Customer("Bradley", "DL001")
+        # driver = Driver("")
         list_of_Vehicles = [key for key in Vehicle.vehicles.keys()]
 
         print(f"Customer name: {customer.name}")
@@ -26,6 +29,9 @@ while True:
 
         for index, vehicle in enumerate(list_of_Vehicles, start=1):
             print(f"{index} - {vehicle}")
-        choice = input("Select a vehicle")
-
+        choice = input("Select a vehicle: ")
         
+        # print(f"Assigned driver: {driver.name}")
+
+        print("Thank you for choosing us.")
+        break
