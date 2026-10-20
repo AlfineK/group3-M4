@@ -14,7 +14,7 @@ class Customer:
 
     @name.setter
     def name(self, value):
-        if value.strip() == "":
+        if not value or not value.strip():
             raise ValueError("Name cannot be empty")
         self._name = value.strip().title()
 
@@ -24,10 +24,9 @@ class Customer:
 
     @driver_id.setter
     def driver_id(self, value):
-        value = value.strip().upper()
-        if len(value) < 5:
-            raise ValueError("Driver ID must be at least 5 characters")
-        self._driver_id = value
+        if not value or not str(value).strip():
+            raise ValueError("Driver ID is required")
+        self._driver_id = str(value).strip()
 
     @property
     def payment(self):
@@ -54,7 +53,7 @@ class Customer:
 
     @classmethod
     def from_dict(cls, data):
-        return cls(data["name"], data["driver_id"], data["payment"])
+        return cls(data["name"], data["driver_id"], data.get("payment", 0))
 
     def __str__(self):
         return f"{self.customer_id}. {self.name} | Driver ID: {self.driver_id} | Paid: {self.payment}"
