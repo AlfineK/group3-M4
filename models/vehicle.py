@@ -1,6 +1,6 @@
 class Vehicle:
     owner = "Group 2 LTD"
-    vehicles = {"KDL001A": {"vehicle_id": "KDL001A",
+    vehicles = {"KDL 001A": {"vehicle_id": "KDL 001A",
                             "brand": "Toyota Prado", "current_mileage": 20000}}
     _next_id = 100
 
@@ -25,10 +25,6 @@ class Vehicle:
     def _generate_id(cls):
         cls._next_id += 1
         return f"KDZ {cls._next_id}Z"
-
-    @classmethod
-    def add_vehicle(cls, vehicle):
-        cls.vehicles.append(vehicle)
 
     @classmethod
     def create(cls, mileage, brand):
