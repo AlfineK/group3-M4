@@ -1,37 +1,91 @@
+import random
+
 from models.vehicle import Vehicle
+from models.driver import Driver
 from models.customer import Customer
-# from models.driver import Driver
+from services.dispatch import dispatch, print_summary
 
-while True:
-    choice = input(
-        "1. To add a new vehicle, press 1.\n"
-        "2. To send out a vehicle, press 2.\n"
-        "3. To exit, press Q: "
-    )
-    if choice.lower() == "q":
-        break
-
-    if choice == "1":
-        current_mileage = int(input("Enter current mileage: "))
-        brand = input("Enter brand and model (eg.Toyota Hilux): ")
-        v = Vehicle.create(current_mileage, brand)
-        print(v.vehicles)
+drivers_list = ["Samuel", "Naledi", "Tendai", "Aisha",
+                "Kwame", "Lerato", "Mpho", "Farai"]
+customers_list = ["Bradley", "Amara", "Chen Wei", "Diego",
+                  "Fatima", "Grace", "Hiroshi", "Imani"]
+brands = ["Toyota Hilux", "Toyota Prado", "Ford Ranger", "Nissan Navara",
+          "Mazda BT-50", "Isuzu D-Max"]
 
 
-    if choice == "2":
-        # print("cars ",Vehicle.vehicles)
-        customer = Customer("Bradley", "DL001")
-        # driver = Driver("")
-        list_of_Vehicles = [key for key in Vehicle.vehicles.keys()]
+def make_vehicles(n):
+    for i in range(n):
+        Vehicle.create(random.randint(5000, 80000), brands[i % len(brands)])
 
-        print(f"Customer name: {customer.name}")
-        print("Available vehicles: ")
 
-        for index, vehicle in enumerate(list_of_Vehicles, start=1):
-            print(f"{index} - {vehicle}")
-        choice = input("Select a vehicle: ")
-        
-        # print(f"Assigned driver: {driver.name}")
+def make_drivers(n):
+    for i in range(n):
+        Driver.create(drivers_list[i % len(drivers_list)], random.randint(500, 5000))
 
-        print("Thank you for choosing us.")
-        break
+
+def make_customers(n):
+    for i in range(n):
+        Customer(customers_list[i % len(customers_list)],
+                 payment=random.randint(0, 2500))
+
+
+def link(drivers, vehicles):
+    for i, c in enumerate(Customer.all()):
+        c.driver_id = drivers[i % len(drivers)].driver_id
+    for i, d in enumerate(drivers):
+        d.vehicle = vehicles[i % len(vehicles)]
+
+
+def show_all():
+    print("\n--- vehicles ---")
+    for v in Vehicle.all():
+        print(" ", v)
+    print("\n--- drivers ---")
+    for d in Driver.all():
+        print(" ", d)
+    print("\n--- customers ---")
+    for c in Customer.all():
+        print(" ", c)
+
+
+def ask(prompt):
+    while True:
+        v = input(prompt).strip()
+        if v:
+            return v
+
+
+def main():
+    make_drivers(4)
+    make_vehicles(4)
+    make_customers(4)
+
+    link(Driver.all(), Vehicle.all())
+
+    show_all()
+    print_summary()
+
+    while True:
+        choice = input("\n1 add vehicle  2 dispatch  3 summary  4 show all  q quit\n> ").strip().lower()
+        if choice == "q":
+            break
+        if choice == "1":
+            v = Vehicle.create(int(ask("mileage: ")), ask("brand: "))
+            print("added", v)
+        elif choice == "2":
+            vs = Vehicle.all()
+            for i, v in enumerate(vs, 1):
+                print(i, "-", v.vehicle_id, v.brand)
+            sel = vs[int(ask("pick: ")) - 1]
+            cust, drv, veh = dispatch(sel.vehicle_id, ask("driver: "), ask("customer: "))
+            print(cust.name, "->", drv.driver_name, "->", veh.vehicle_id)
+        elif choice == "3":
+            print_summary()
+        elif choice == "4":
+            show_all()
+        else:
+            print("?")
+
+
+if __name__ == "__main__":
+    main()

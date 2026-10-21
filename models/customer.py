@@ -1,12 +1,19 @@
 class Customer:
     counter = 1
+    _customers = {}
 
-    def __init__(self, name, driver_id, payment=0):
+    def __init__(self, name, driver_id=None, payment=0, customer_id=None):
         self.name = name
-        self.driver_id = driver_id
         self.payment = payment
-        self.customer_id = Customer.counter
+        self.customer_id = customer_id if customer_id else self._next()
+        self.driver_id = driver_id
+        Customer._customers[self.customer_id] = self
+
+    @classmethod
+    def _next(cls):
+        cid = Customer.counter
         Customer.counter += 1
+        return cid
 
     @property
     def name(self):
@@ -24,9 +31,9 @@ class Customer:
 
     @driver_id.setter
     def driver_id(self, value):
-        if not value or not str(value).strip():
-            raise ValueError("Driver ID is required")
-        self._driver_id = str(value).strip()
+        if value is not None and not str(value).strip():
+            raise ValueError("Driver ID cannot be blank")
+        self._driver_id = str(value).strip() if value is not None else None
 
     @property
     def payment(self):
@@ -43,6 +50,14 @@ class Customer:
             raise ValueError("Amount must be more than 0")
         self.payment = self.payment + amount
 
+    @classmethod
+    def get(cls, customer_id):
+        return cls._customers.get(customer_id)
+
+    @classmethod
+    def all(cls):
+        return list(cls._customers.values())
+
     def to_dict(self):
         return {
             "customer_id": self.customer_id,
@@ -53,7 +68,12 @@ class Customer:
 
     @classmethod
     def from_dict(cls, data):
-        return cls(data["name"], data["driver_id"], data.get("payment", 0))
+        return cls(
+            name=data["name"],
+            driver_id=data.get("driver_id"),
+            payment=data.get("payment", 0),
+            customer_id=data.get("customer_id"),
+        )
 
     def __str__(self):
-        return f"{self.customer_id}. {self.name} | Driver ID: {self.driver_id} | Paid: {self.payment}"
+        return f"{self.customer_id} | {self.name} | driver={self.driver_id or '-'} | paid={self.payment}"
